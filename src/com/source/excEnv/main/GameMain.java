@@ -1,5 +1,8 @@
 package com.source.excEnv.main;
 
+import java.awt.GraphicsDevice;
+import java.awt.Insets;
+import java.awt.MouseInfo;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
@@ -16,10 +19,16 @@ public class GameMain {
 	
 	public static void main(String[] args) {
 		//inital frame
-		Toolkit tk = Toolkit.getDefaultToolkit();
+		GraphicsDevice gd = MouseInfo.getPointerInfo().getDevice();
 		frame = new JFrame(titleName);	//make new frame
-		GAME_WIDTH = ((int) tk.getScreenSize().getWidth());
-		GAME_HEIGHT = ((int) tk.getScreenSize().getHeight());
+		
+		Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(frame.getGraphicsConfiguration());
+		
+		GAME_WIDTH = gd.getDisplayMode().getWidth();
+		GAME_HEIGHT = gd.getDisplayMode().getHeight();
+		GAME_WIDTH -= (insets.left + insets.right);
+		GAME_HEIGHT -= (insets.top + insets.bottom);		
+		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	//colse operation
 		frame.setResizable(true);	//non-resizable
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);

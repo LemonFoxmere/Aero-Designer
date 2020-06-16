@@ -16,6 +16,7 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import com.source.excEnv.model.button.standardButton;
+import com.source.excEnv.model.shape.quadShape;
 import com.source.excEnv.main.GameMain;
 import com.source.excEnv.model.button.exportButton;
 import com.source.excEnv.model.slider.*;
@@ -25,7 +26,9 @@ public class MenuState extends State {
 	private ArrayList<StandardSlider> sliders;
 	private exportButton exportBtn;
 	
-	private int sliderYOffset = 150;
+	private quadShape testWing;
+	
+	private int sliderYOffset = GameMain.GAME_HEIGHT/2-370;
 	private int sliderXOffset = 60;
 
 	@Override
@@ -52,6 +55,8 @@ public class MenuState extends State {
 			sliders.add(new StandardSlider(0+sliderXOffset, 650+sliderYOffset, 300, 7, 25, 1, 50, "Chord [ Meters ]"));
 		
 		exportBtn = new exportButton(62, GameMain.GAME_HEIGHT-130, 200, 50, "Export Aircraft");
+		
+		testWing = new quadShape(400, 100, 200, 100, 0);
 	}
 
 	@Override
@@ -84,6 +89,17 @@ public class MenuState extends State {
 		g.drawString(b.message, b.x+b.w/2-b.message.length()*5.7f, b.y+b.h/2+5);
 	}
 	
+	int i =0;
+	
+	private void renderPlane(Graphics2D g, quadShape wing) {
+		g.setColor(Color.BLUE);
+		wing.updateRot((int) Math.sin(i));
+		g.rotate(Math.toRadians(wing.rotation), wing.rotCenterX, wing.rotCenterY);
+		g.fillRect(wing.x, wing.y, wing.w, wing.h);
+		i++;
+		g.rotate(-Math.toRadians(wing.rotation), wing.rotCenterX, wing.rotCenterY);
+	}
+	
 	@Override
 	public void render(Graphics g) {
 		//DO NOT DELETE THIS LINE
@@ -103,8 +119,8 @@ public class MenuState extends State {
 		//render separator
 		g2D.setColor(new Color(217, 217, 217));
 		g2D.setStroke(new BasicStroke(2));
-		g2D.drawLine(20, 240+sliderYOffset, 450, 240+sliderYOffset);
-		g2D.drawLine(20, 540+sliderYOffset, 450, 540+sliderYOffset);
+		g2D.drawLine(20, 230+sliderYOffset, 450, 230+sliderYOffset);
+		g2D.drawLine(20, 520+sliderYOffset, 450, 520+sliderYOffset);
 		g2D.drawLine(530, 200, 530, GameMain.GAME_HEIGHT-300);
 		
 		g2D.setColor(Color.BLACK);	//reset color
@@ -112,32 +128,31 @@ public class MenuState extends State {
 		//render section names
 		{
 			//section main
-			int offsetX = 460;
-			int offsetY = 190;
-			g2D.rotate(Math.toRadians(90), offsetX, offsetY);
+			int offsetX = 165;
+			int offsetY = sliderYOffset-35;
 			g2D.setFont(new Font("Trebuchet MS", Font.BOLD, 25));
 			g2D.drawString("Main Wing", offsetX, offsetY);
-			g2D.rotate(Math.toRadians(-90), offsetX, offsetY);
-		}{
-			//section main
-			int offsetX = 460;
-			int offsetY = 475;
-			g2D.rotate(Math.toRadians(90), offsetX, offsetY);
-			g2D.setFont(new Font("Trebuchet MS", Font.BOLD, 25));
-			g2D.drawString("H. Stabilizer", offsetX, offsetY);
-			g2D.rotate(Math.toRadians(-90), offsetX, offsetY);
 		}{
 			//section main
 			int offsetX = 150;
-			int offsetY = 850;
+			int offsetY = 260+sliderYOffset;
+			g2D.setFont(new Font("Trebuchet MS", Font.BOLD, 25));
+			g2D.drawString("H. Stabilizer", offsetX, offsetY);
+		}{
+			//section main
+			int offsetX = 150;
+			int offsetY = 560+sliderYOffset;
 			g2D.setFont(new Font("Trebuchet MS", Font.BOLD, 25));
 			g2D.drawString("V. Stabilizer", offsetX, offsetY);
 		}
 		
+		testWing.updateX(GameMain.GAME_WIDTH - testWing.w - 100);
+		testWing.updateY(100);
 		//render buttons
 		renderButton(g2D, exportBtn);
 		
-		//section section
+		//render plane
+		renderPlane(g2D, testWing);
 		
 	}
 
