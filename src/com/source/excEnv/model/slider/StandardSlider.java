@@ -5,7 +5,7 @@ import java.awt.Dimension;
 
 public class StandardSlider {
 	
-	public int posX, posY, length, defaultVal, minVal, maxVal, buttonX, buttonY, offset = 0, buttonRad;
+	public int posX, posY, length, defaultVal, minVal, maxVal, buttonX, buttonY, offset = 0, buttonRad, id;
 	public float currentVal;
 	public Dimension boundingBox;
 	public boolean isDragged = false;
@@ -13,7 +13,7 @@ public class StandardSlider {
 	
 	public String description;
 	
-	public StandardSlider(int posX, int posY, int length, int buttonRad, int defaultVal, int minVal, int maxVal, String description) {
+	public StandardSlider(int posX, int posY, int length, int buttonRad, int defaultVal, int minVal, int maxVal, String description, int id) {
 		
 		if (defaultVal > maxVal || defaultVal < minVal) {
 			throw new IllegalArgumentException("default Value cannot exceed maxVal or subceed minVal");
@@ -29,6 +29,7 @@ public class StandardSlider {
 		this.currentVal = defaultVal;
 		this.minVal = minVal;
 		this.maxVal = maxVal;
+		this.id = id;
 		
 		buttonX = (int) (posX + (float) (Math.abs(minVal) + currentVal) / (maxVal - minVal) * length - buttonRad);
 		buttonY = (int) (posY - buttonRad);
@@ -43,12 +44,20 @@ public class StandardSlider {
 	}
 	
 	public String getCurrentVal() {
-		return String.valueOf(currentVal);
+		return String.valueOf(roundValueToSecondPlace(currentVal));
+	}
+	
+	public Color getColor() {
+		return buttonColor;
+	}
+	
+	public float getCurrentValNum() {
+		return currentVal;
 	}
 	
 	public void offsetVal(float amt) {
 		if (currentVal > minVal && currentVal < maxVal) {
-			currentVal = roundValueToSecondPlace(currentVal += amt);
+			currentVal = (currentVal += amt);
 			updateButtonPosition(currentVal);
 			return;
 		}
@@ -65,7 +74,7 @@ public class StandardSlider {
 	public void updateValue(int x) {
 		if (x >= posX - buttonRad - this.offset && x <= (posX + length)){			
 			buttonX = x + this.offset;
-			currentVal = roundValueToSecondPlace((((buttonX + buttonRad) - posX) / (float)(length) * (maxVal - minVal)) + minVal);
+			currentVal = (((buttonX + buttonRad) - posX) / (float)(length) * (maxVal - minVal)) + minVal;
 			return;
 		}
 		if (x < posX - buttonRad) {

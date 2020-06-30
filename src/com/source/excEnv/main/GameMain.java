@@ -27,7 +27,7 @@ public class GameMain {
 		GAME_WIDTH = gd.getDisplayMode().getWidth();
 		GAME_HEIGHT = gd.getDisplayMode().getHeight();
 		GAME_WIDTH -= (insets.left + insets.right);
-		GAME_HEIGHT -= (insets.top + insets.bottom);		
+		GAME_HEIGHT -= (insets.top + insets.bottom);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	//colse operation
 		frame.setResizable(true);	//non-resizable
