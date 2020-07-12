@@ -18,7 +18,7 @@ public class LoadState extends State {
 	@Override
 	public void update(float delta) {
 		//change current state to menu state
-		setCurrentState(new MenuState());
+		setCurrentState(new MainState());
 	}
 
 	@Override
