@@ -11,12 +11,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import com.source.excEnv.model.button.standardButton;
 import com.source.excEnv.model.shape.vStabalizer;
 import com.source.excEnv.model.shape.wing;
 import com.source.excEnv.main.GameMain;
+import com.source.excEnv.main.Resource;
 import com.source.excEnv.model.button.exportButton;
 import com.source.excEnv.model.slider.*;
 
@@ -26,6 +28,7 @@ public class MainState extends State {
 	private exportButton exportBtn;
 	
 	private int sliderYOffset = GameMain.GAME_HEIGHT/2-395;
+
 	private int sliderXOffset = 60;
 	
 	private wing mainWing;
@@ -34,6 +37,7 @@ public class MainState extends State {
 
 	//plane part animation
 	int focusMode = 0; // 0 = bird view, 1 = side view, 2 = front view
+	private ScrollSlider modeSlider;
 	private AffineTransform birdScale, sideScale, frontScale;
 	private int birdYVec, sideYVec, frontYVec;
 	
@@ -47,14 +51,14 @@ public class MainState extends State {
 			sliders.add(new StandardSlider(0+sliderXOffset, 50+sliderYOffset, 300, 7, 42, 1, 50, "Semispan [ Meters ]",1));			
 			sliders.add(new StandardSlider(0+sliderXOffset, 100+sliderYOffset, 300, 7, 0, -30, 30, "Dihedral [ Degrees ]",2));
 			sliders.add(new StandardSlider(0+sliderXOffset, 150+sliderYOffset, 300, 7, 10, -35, 55, "Sweep [ Degrees ]",3));
-			sliders.add(new StandardSlider(0+sliderXOffset, 200+sliderYOffset, 300, 7, 8, 1, 25, "Chord [ Meters ]",4));
+			sliders.add(new StandardSlider(0+sliderXOffset, 200+sliderYOffset, 300, 7, 8, 1, 18, "Chord [ Meters ]",4));
 		//------H stab------
 			//                             x    y   len ra de min max  desc
 			sliders.add(new StandardSlider(0+sliderXOffset, 300+sliderYOffset, 300, 7, 0, -5, 5, "Angle of Attack [ Degrees ]",5));			
-			sliders.add(new StandardSlider(0+sliderXOffset, 350+sliderYOffset, 300, 7, 17, 1, 30, "Semispan [ Meters ]",6));			
+			sliders.add(new StandardSlider(0+sliderXOffset, 350+sliderYOffset, 300, 7, 17, 0, 30, "Semispan [ Meters ]",6));			
 			sliders.add(new StandardSlider(0+sliderXOffset, 400+sliderYOffset, 300, 7, 0, -30, 30, "Dihedral [ Degrees ]",7));
 			sliders.add(new StandardSlider(0+sliderXOffset, 450+sliderYOffset, 300, 7, 20, -25, 55, "Sweep [ Degrees ]",8));
-			sliders.add(new StandardSlider(0+sliderXOffset, 500+sliderYOffset, 300, 7, 8, 1, 25, "Chord [ Meters ]",9));
+			sliders.add(new StandardSlider(0+sliderXOffset, 500+sliderYOffset, 300, 7, 8, 1, 15, "Chord [ Meters ]",9));
 		//------V stab------
 			//                             x    y   len ra de min max  desc			
 			sliders.add(new StandardSlider(0+sliderXOffset, 600+sliderYOffset, 300, 7, 18, 1, 40, "Wingspan [ Meters ]",10));			
@@ -68,12 +72,14 @@ public class MainState extends State {
 		birdScale = new AffineTransform();
 		sideScale = new AffineTransform();
 		frontScale = new AffineTransform();
+		
+		modeSlider = new ScrollSlider(510, GameMain.GAME_HEIGHT/2-(GameMain.GAME_HEIGHT/5)/2-20, 10, GameMain.GAME_HEIGHT/5, 3, 0);
 			
-		exportBtn = new exportButton(62, GameMain.GAME_HEIGHT-130, 200, 50, "Export Aircraft");
+		exportBtn = new exportButton(62, GameMain.GAME_HEIGHT-130, 386, 50, "Export Aircraft");
 		
 		updateScaler(0);
 	}
-
+	
 	@Override
 	public void update(float delta) {
 		//update main wing
@@ -158,7 +164,7 @@ public class MainState extends State {
 		} else if (state == 2) {
 			if (sideYVec > -1500) {
 				if(sideYVec >= 1500) {
-					sideYVec -= 600;
+					sideYVec -= 1000;
 				}
 				sideYVec -= 90;
 			}
@@ -422,7 +428,7 @@ public class MainState extends State {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void renderPlane(Graphics2D g, wing mainWing, wing hStab) {
 		int offsetPlaneX = 0;
 		int offsetPlaneY = 0;
@@ -434,19 +440,35 @@ public class MainState extends State {
 	
 	private void renderButton(Graphics2D g, standardButton b){
 		g.setColor(b.buttonColor);
-		g.fillRect(b.x, b.y, b.w, b.h);
+		g.fillRoundRect(b.x, b.y, b.w, b.h, b.h, b.h);
 		
 		//render message
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("MS Gothic", Font.BOLD, 20));
-		g.drawString(b.message, b.x+b.w/2-b.message.length()*5.7f, b.y+b.h/2+5);
+		g.drawString(b.message, b.x+b.w/2-b.message.length()*5.7f+1, (float) (b.y+b.h/2+6));
 	}
+	
+	private void renderScrollSlider(Graphics2D g, ScrollSlider s) {
+		float frontOffsetX = 0;
+		float frontOffsetY = 0;
+
+		g.setColor(s.bgColor);
+		g.fillRoundRect((int) (s.x+frontOffsetX), (int) (s.y+frontOffsetY),
+				s.w, s.l, s.w, s.w);
+		g.setColor(s.fgColor);
+		g.fillRoundRect((int) (s.Sx+frontOffsetX), (int) (s.Sy+frontOffsetY),
+				s.Sw, s.Sl, s.Sw, s.Sw);
+	}
+	
+	private BufferedImage AerovateLogo = Resource.resizeImage(Resource.loadImage("AerovateLogo.png"), 0.5f);
+	private BufferedImage LemonOrangeLogo = Resource.resizeImage(Resource.loadImage("LemonOrangeLogo.png"), 0.2f);
 	
 	@Override
 	public void render(Graphics g) {
 		//DO NOT DELETE THIS LINE
 		Graphics2D g2D = (Graphics2D) g;
 		g2D.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+		
 		g2D.setFont(new Font("MS Gothic", Font.PLAIN, 20));
 		
 		//rendeer bg
@@ -454,17 +476,17 @@ public class MainState extends State {
 		g2D.fillRect(0, 0, GameMain.GAME_WIDTH, GameMain.GAME_HEIGHT);
 		//rendeer bg
 		
-		for (StandardSlider i : sliders) {		
-			renderSlider(g2D, i);
-		}
-		
 		//render separator
 		g2D.setColor(new Color(217, 217, 217));
 		g2D.setStroke(new BasicStroke(2));
 		g2D.drawLine(20, 230+sliderYOffset, 450, 230+sliderYOffset);
 		g2D.drawLine(20, 520+sliderYOffset, 450, 520+sliderYOffset);
-		g2D.drawLine(530, 350, 530, GameMain.GAME_HEIGHT-450);
-		
+
+
+		for (StandardSlider i : sliders) {		
+			renderSlider(g2D, i);
+		}
+
 		g2D.setColor(Color.BLACK);	//reset color
 		
 		//render section names
@@ -472,19 +494,19 @@ public class MainState extends State {
 			//section main
 			int offsetX = 165;
 			int offsetY = sliderYOffset-35;
-			g2D.setFont(new Font("Trebuchet MS", Font.BOLD, 25));
+			g2D.setFont(new Font("URW Gothic", Font.BOLD, 25));
 			g2D.drawString("Main Wing", offsetX, offsetY);
 		}{
 			//section main
 			int offsetX = 150;
 			int offsetY = 260+sliderYOffset;
-			g2D.setFont(new Font("Trebuchet MS", Font.BOLD, 25));
+			g2D.setFont(new Font("URW Gothic", Font.BOLD, 25));
 			g2D.drawString("H. Stabilizer", offsetX, offsetY);
 		}{
 			//section main
 			int offsetX = 150;
 			int offsetY = 560+sliderYOffset;
-			g2D.setFont(new Font("Trebuchet MS", Font.BOLD, 25));
+			g2D.setFont(new Font("URW Gothic", Font.BOLD, 25));
 			g2D.drawString("V. Stabilizer", offsetX, offsetY);
 		}
 		
@@ -493,7 +515,11 @@ public class MainState extends State {
 		
 		//render plane
 		renderPlane(g2D, mainWing, hStab);
+		renderScrollSlider(g2D, modeSlider);
 		
+		//render logos
+		g.drawImage(AerovateLogo, (int) (GameMain.GAME_WIDTH/2-77.5), 20, null);
+		g.drawImage(LemonOrangeLogo, (int) (GameMain.GAME_WIDTH-120), (int) (GameMain.GAME_HEIGHT-120), null);
 	}
 
 	
@@ -519,8 +545,7 @@ public class MainState extends State {
 				i.updateOffset(offset);
 				i.isDragged = true;
 			}
-		}
-		
+		}			
 		if (exportBtn.inBound(e.getX(), e.getY())) {
 			exportBtn.pressed();
 		}
@@ -536,17 +561,24 @@ public class MainState extends State {
 		
 		//check if the box is pressed
 		if (exportBtn.inBound(e.getX(), e.getY())) {
-			exportBtn.action();
+			exportBtn.action(mainWing, hStab, vStab);
 			exportBtn.released();
 		}
 	}
 	
 	//------
 
+	private void updateHoveredScrollSliders(MouseEvent e, ScrollSlider s) {
+		if (s.isInBound(e.getX(), e.getY())) {			
+			s.onHover();
+		} else {
+			s.onNormal();
+		}
+	}
+	
 	private void updateHoveredSliders(MouseEvent e, StandardSlider s) {
 		if (s.isInBoundingBox(e.getX(), e.getY())){
 			s.updateToHoverState();
-			
 			//focus update
 			if (s.id == 1 || 
 					s.id == 3 || 
@@ -566,6 +598,7 @@ public class MainState extends State {
 			} else {
 				focusMode = 2;
 			}
+			modeSlider.changeMode(focusMode);
 		} else {
 			s.updateToNormalState();
 		}
@@ -586,6 +619,7 @@ public class MainState extends State {
 		}
 //		System.out.println(button.inBound(e.getX(), e.getY()));
 		updateHoveredButtons(e, exportBtn);
+		updateHoveredScrollSliders(e, modeSlider);
 	}
 
 	//------
@@ -602,7 +636,7 @@ public class MainState extends State {
 	//------
 
 	@Override
-	public void mouseScroll(MouseWheelEvent e) {
+	public void mouseScroll(MouseWheelEvent e) {		
 		for(StandardSlider i : sliders) {
 			if (i.isInBoundingBox(e.getX(), e.getY())){
 				if (e.isShiftDown()) {					
@@ -621,5 +655,38 @@ public class MainState extends State {
 				return;
 			}
 		}
+		
+		if (modeSlider.isInBound(e.getX(), e.getY())) {
+			if(e.getWheelRotation() == 1) {// go down a mode
+				if (focusMode+1 <= 2) {
+					focusMode ++;
+					modeSlider.changeMode(focusMode);
+					return;
+				}
+			}
+			if(e.getWheelRotation() == -1) {// go up a mode
+				if (focusMode-1 >= 0) {
+					focusMode --;	
+					modeSlider.changeMode(focusMode);
+					return;
+				}
+			}
+		}
+	}
+	
+	
+	// ------ getters ------
+	
+	
+	public wing getMainWing() {
+		return mainWing;
+	}
+
+	public wing gethStab() {
+		return hStab;
+	}
+
+	public vStabalizer getvStab() {
+		return vStab;
 	}
 }

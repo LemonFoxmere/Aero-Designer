@@ -96,13 +96,17 @@ public class StandardSlider {
 	}
 	
 	public void updateToHoverState() {
+		updateToHoverStateCus(14);
+	}
+	
+	public void updateToHoverStateCus(int milis) {
 		while(buttonRad != 12f) {			
 			buttonRad++;
 			buttonX--;
 			buttonY--;
 			buttonColor = new Color(buttonColor.getRed() + 51, buttonColor.getGreen() + 15, buttonColor.getBlue() + 15);
 			try {
-				Thread.sleep(14);
+				Thread.sleep(milis);
 			} catch (InterruptedException e) {
 				System.err.println("An internal error has occoured. Please report this problem to reallemonorange@gmail.com along with the following error code: ");
 				System.err.println("---");
@@ -112,14 +116,19 @@ public class StandardSlider {
 		}
 	}
 	
+	
 	public void updateToNormalState() {
+		updateToNormalStateCuz(14);
+	}
+	
+	public void updateToNormalStateCuz(int milis) {
 		while(buttonRad != 7f) {			
 			buttonRad--;
 			buttonX++;
 			buttonY++;
 			buttonColor = new Color(buttonColor.getRed() - 51, buttonColor.getGreen() - 15, buttonColor.getBlue() - 15);
 			try {
-				Thread.sleep(14);
+				Thread.sleep(milis);
 			} catch (InterruptedException e) {
 				System.err.println("An internal error has occoured. Please report this problem to reallemonorange@gmail.com along with the following error code: ");
 				System.err.println("---");

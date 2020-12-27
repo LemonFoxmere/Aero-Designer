@@ -2,6 +2,8 @@ package com.source.excEnv.main;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
@@ -22,6 +24,7 @@ public class Resource {
 	}
 	
 	//load sound
+	@SuppressWarnings("unused")
 	private static AudioClip loadSound(String filename) {
 		URL fileURL = Resources.class.getResource("/resource/" + filename);	//get sound
 		return Applet.newAudioClip(fileURL);	//return sound
@@ -32,7 +35,7 @@ public class Resource {
 		BufferedImage img = null;
 		try {
 			//read and get image
-			img = ImageIO.read(Resources.class.getResourceAsStream("/resource/" + filename));
+			img = ImageIO.read(Resources.class.getResourceAsStream("/asset/" + filename));
 		} catch (IOException e) {
 			//if failed, print err
 			System.err.println("failed to load \"" + filename + "\"");
@@ -41,4 +44,15 @@ public class Resource {
 		return img;
 	}
 	
+	public static BufferedImage resizeImage(BufferedImage before, float factor) {
+		int w = before.getWidth();
+		int h = before.getHeight();
+		BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		AffineTransform at = new AffineTransform();
+		at.scale(factor, factor);
+		AffineTransformOp scaleOp = 
+		   new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		after = scaleOp.filter(before, after);
+		return after;
+	}
 }

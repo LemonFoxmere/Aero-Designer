@@ -99,7 +99,4 @@ public abstract class standardButton implements classicButton{
 	public boolean inBound(int x, int y) {
 		return (x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h) ? true:false;
 	}
-	
-	@Override
-	public abstract void action();
 }

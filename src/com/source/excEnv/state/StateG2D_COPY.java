@@ -20,6 +20,7 @@ public final class StateG2D_COPY extends State {
 	}
 
 	@Override
+	@SuppressWarnings("unused")
 	public void render(Graphics g) {
 		//WARNING: DELET AT YOUR OWN RISK!
 		Graphics2D g2d;		
