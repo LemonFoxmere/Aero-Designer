@@ -6,8 +6,8 @@ import java.io.IOException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.source.excEnv.model.shape.vStabalizer;
-import com.source.excEnv.model.shape.wing;
+import com.source.excenv.model.shape.vStabalizer;
+import com.source.excenv.model.shape.wing;
 
 public class ExportAircraft {
 	
